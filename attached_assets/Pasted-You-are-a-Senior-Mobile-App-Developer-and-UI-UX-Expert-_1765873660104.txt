@@ -1,0 +1,89 @@
+You are a Senior Mobile App Developer and UI/UX Expert specializing in React Native (Expo).
+
+Build a production-ready Android Application for a spiritual service platform called "NamanDarshan".
+
+========================
+CORE OBJECTIVE
+========================
+Create a premium, mobile-first application with a **Two-Way Bidding System** where:
+1. USERS browse services and post a Request with their **"Offered Price" (User's Bid)**.
+2. PANDITS view requests and can either **Accept User's Offer** immediately OR **Place a Counter-Bid** (Ask for more).
+3. USERS finalize the booking by accepting a Pandit.
+
+**CRITICAL:**
+- NO Admin login. NO Astrology module.
+- The workflow is strictly: Request + User Budget -> Pandit Response -> Match.
+
+========================
+UI/UX REQUIREMENTS
+========================
+- **Theme:** Divine & Premium (Saffron, White, Gold).
+- **Typography:** Clean, modern, readable fonts.
+- **Components:** High-quality cards, easy-to-tap buttons, clear price highlights.
+
+========================
+ROLES & AUTH (2 ROLES ONLY)
+========================
+Login screen with toggle:
+1. **USER** (Devotee)
+2. **PANDIT** (Priest)
+
+========================
+APP FLOW & FEATURES
+========================
+
+### 1. USER APP FLOW
+* **Home Screen:** Browse Temples, Pujas, Packages.
+* **Booking/Request Flow (THE UPGRADE):**
+    * User selects a Puja (e.g., "Rudrabhishek").
+    * User selects Date & Time.
+    * **User Bid Input:** A clear field saying *"Apna Budget Batayein" (Enter Your Offer Price)*.
+    * Submit Request.
+* **"MY BIDS" Tab:**
+    * Shows list of Open Requests.
+    * **Status Indicators:**
+        * *Yellow:* Waiting for Pandits.
+        * *Green:* Pandit Accepted your price! (Ready to Pay).
+        * *Blue:* Pandit Countered (Pandit asking higher price).
+    * **Action:** User sees Pandit's counter-offer (e.g., "Pandit Rahul asks ₹1100") and clicks **"Accept Deal"**.
+
+### 2. PANDIT APP FLOW
+* **Live Market (Feed):**
+    * Cards showing: "Rudrabhishek @ Mahakal" | **User Offer: ₹501**.
+    * **Two Action Buttons:**
+        1. **"Accept @ ₹501"** (Instantly confirms booking).
+        2. **"Counter Offer"** (Opens input to enter higher price, e.g., ₹700).
+* **My Bookings:** Confirmed deals.
+
+========================
+NAVIGATION (Bottom Bar)
+========================
+1. Home
+2. Services
+3. **My Bids** (Central Hub for Negotiation)
+4. Profile
+
+========================
+DATA MODELS (Enhanced)
+========================
+1. **Request:**
+    - `id`, `userId`, `serviceName`, `date`, `userBudgetPrice` (The User's Bid), `status`.
+2. **PanditResponse:**
+    - `id`, `requestId`, `panditId`, `type` (ACCEPTED_USER_PRICE or COUNTER_OFFER), `counterAmount`.
+
+========================
+TECH STACK
+========================
+- **Framework:** React Native (Expo)
+- **Styling:** NativeWind (Tailwind)
+- **Navigation:** React Navigation
+- **Icons:** Lucide-react-native
+- **State:** Context API (Manage logic for accepting/countering bids locally for demo).
+
+========================
+OUTPUT INSTRUCTIONS
+========================
+1. **Focus on the Bidding Logic:** The code must clearly distinguish between a User's initial budget and a Pandit's counter-offer.
+2. **UI Polish:** Make the "Price Input" fields prominent. Use Green color for "Accept" and Orange for "Counter".
+3. Provide full source code including `App.js` and components.
+4. Ensure the app runs smoothly on Expo Go.
