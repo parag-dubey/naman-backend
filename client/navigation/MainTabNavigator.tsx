@@ -3,12 +3,19 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { Platform, StyleSheet } from "react-native";
+
 import HomeStackNavigator from "@/navigation/HomeStackNavigator";
+import ServicesStackNavigator from "@/navigation/ServicesStackNavigator";
+import BidsStackNavigator from "@/navigation/BidsStackNavigator";
 import ProfileStackNavigator from "@/navigation/ProfileStackNavigator";
 import { useTheme } from "@/hooks/useTheme";
+import { useApp } from "@/context/AppContext";
+import { Colors } from "@/constants/theme";
 
 export type MainTabParamList = {
   HomeTab: undefined;
+  ServicesTab: undefined;
+  BidsTab: undefined;
   ProfileTab: undefined;
 };
 
@@ -16,12 +23,15 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export default function MainTabNavigator() {
   const { theme, isDark } = useTheme();
+  const { user } = useApp();
+
+  const isPandit = user?.role === "pandit";
 
   return (
     <Tab.Navigator
       initialRouteName="HomeTab"
       screenOptions={{
-        tabBarActiveTintColor: theme.tabIconSelected,
+        tabBarActiveTintColor: Colors.light.primary,
         tabBarInactiveTintColor: theme.tabIconDefault,
         tabBarStyle: {
           position: "absolute",
@@ -50,6 +60,26 @@ export default function MainTabNavigator() {
           title: "Home",
           tabBarIcon: ({ color, size }) => (
             <Feather name="home" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="ServicesTab"
+        component={ServicesStackNavigator}
+        options={{
+          title: "Services",
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="briefcase" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="BidsTab"
+        component={BidsStackNavigator}
+        options={{
+          title: isPandit ? "Market" : "My Bids",
+          tabBarIcon: ({ color, size }) => (
+            <Feather name={isPandit ? "activity" : "shopping-cart"} size={size} color={color} />
           ),
         }}
       />
