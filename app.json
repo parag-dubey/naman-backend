@@ -4,7 +4,7 @@
     "slug": "namandarshan",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon.webp",
     "scheme": "namandarshan",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -25,13 +25,13 @@
     },
     "web": {
       "output": "single",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.webp"
     },
     "plugins": [
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/splash-icon.webp",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#FF9933",

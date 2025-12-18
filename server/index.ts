@@ -162,7 +162,19 @@ function configureExpoAndLanding(app: express.Application) {
     "templates",
     "landing-page.html",
   );
-  const landingPageTemplate = fs.readFileSync(templatePath, "utf-8");
+  
+  // Error handling agar template file na mile
+  let landingPageTemplate = "<h1>App Landing Page</h1>";
+  try {
+      if (fs.existsSync(templatePath)) {
+          landingPageTemplate = fs.readFileSync(templatePath, "utf-8");
+      } else {
+          log("⚠️ Warning: Landing page template not found at", templatePath);
+      }
+  } catch (e) {
+      log("⚠️ Error reading landing page template:", e);
+  }
+
   const appName = getAppName();
 
   log("Serving static Expo files with dynamic manifest routing");
@@ -227,15 +239,12 @@ function setupErrorHandler(app: express.Application) {
 
   setupErrorHandler(app);
 
+  // ✅ FIX 1: Default port set to 5000
   const port = parseInt(process.env.PORT || "5000", 10);
-  server.listen(
-    {
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    },
-    () => {
-      log(`express server serving on port ${port}`);
-    },
-  );
+
+  // ✅ FIX 2: Removed "0.0.0.0" and reusePort options (Causes Windows Error)
+  // Simple listen command works best on Windows
+  server.listen(port, () => {
+    log(`express server serving on port ${port}`);
+  });
 })();

@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useCallback, ReactNode, use
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export type UserRole = "user" | "pandit";
-
 export type RequestStatus = "pending" | "accepted" | "countered" | "confirmed";
 
 export interface PujaService {
@@ -11,7 +10,15 @@ export interface PujaService {
   description: string;
   basePrice: number;
   temple: string;
-  imageUrl?: string;
+  image: string; // Server URL
+}
+
+// ✅ NEW: Temple Interface Add kiya
+export interface Temple {
+  id: string;
+  name: string;
+  location: string;
+  image: string; // Server URL
 }
 
 export interface PujaRequest {
@@ -59,6 +66,8 @@ interface AppContextType {
   getResponsesForRequest: (requestId: string) => PanditResponse[];
   getMyBookings: () => PujaRequest[];
   isLoading: boolean;
+  services: PujaService[]; 
+  temples: Temple[]; // ✅ Context me Temples add kiya
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -69,25 +78,44 @@ const STORAGE_KEYS = {
   RESPONSES: "@namandarshan_responses",
 };
 
-const sampleServices: PujaService[] = [
-  { id: "1", name: "Rudrabhishek", description: "Sacred Shiva worship with holy water", basePrice: 501, temple: "Mahakaleshwar Temple" },
-  { id: "2", name: "Satyanarayan Puja", description: "Lord Vishnu worship for prosperity", basePrice: 751, temple: "ISKCON Temple" },
-  { id: "3", name: "Ganesh Puja", description: "Remove obstacles and bring success", basePrice: 351, temple: "Siddhivinayak Temple" },
-  { id: "4", name: "Navgraha Shanti", description: "Planetary peace and harmony", basePrice: 1100, temple: "Ujjain Navgraha" },
-  { id: "5", name: "Kaal Sarp Dosh Nivaran", description: "Remove serpent doshas", basePrice: 2100, temple: "Trimbakeshwar" },
-];
-
-export const pujaServices = sampleServices;
-
 export function AppProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [requests, setRequests] = useState<PujaRequest[]>([]);
   const [panditResponses, setPanditResponses] = useState<PanditResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // ✅ States for API Data
+  const [services, setServices] = useState<PujaService[]>([]);
+  const [temples, setTemples] = useState<Temple[]>([]); // ✅ Temples State
+
+  // ✅ YAHAN APNA NGROK LINK DALO
+  const API_URL = "https://subdistichous-atmospherically-nida.ngrok-free.dev";
 
   useEffect(() => {
     loadStoredData();
+    fetchServices(); // <-- Server se data mangwana shuru
   }, []);
+
+  // ✅ Function to Fetch Data from API (Updated)
+  const fetchServices = async () => {
+    try {
+      console.log("Fetching data from:", API_URL);
+
+      // 1. Fetch Services
+      const servicesRes = await fetch(`${API_URL}/api/services`);
+      const servicesData = await servicesRes.json();
+      setServices(servicesData);
+
+      // 2. Fetch Temples (✅ Ye line add ki hai)
+      const templesRes = await fetch(`${API_URL}/api/temples`);
+      const templesData = await templesRes.json();
+      setTemples(templesData);
+
+    } catch (error) {
+      console.error("API Error:", error);
+      // Fallback: Agar API fail ho to empty array rakho taaki app crash na ho
+    }
+  };
 
   const loadStoredData = async () => {
     try {
@@ -139,7 +167,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await AsyncStorage.removeItem(STORAGE_KEYS.USER);
   }, []);
 
-  const createRequest = useCallback((requestData: Omit<PujaRequest, "id" | "userId" | "status" | "createdAt">) => {
+  // ✅ UPDATED: Server par Data Save karne wala function
+  const createRequest = useCallback(async (requestData: Omit<PujaRequest, "id" | "userId" | "status" | "createdAt">) => {
     if (!user) return;
     
     const newRequest: PujaRequest = {
@@ -150,11 +179,42 @@ export function AppProvider({ children }: { children: ReactNode }) {
       createdAt: new Date().toISOString(),
     };
 
+    // 1. Local State Update (Instant dikhane ke liye)
     setRequests(prev => {
       const updated = [...prev, newRequest];
       saveRequests(updated);
       return updated;
     });
+
+    // 2. ✅ Server par data bhejna (WordPress connection ke liye)
+    try {
+      // ✅ Yahan humne Name aur Phone jooda hai taaki WordPress par dikhe
+      const payload = {
+        ...newRequest,
+        userName: user.name,
+        userPhone: user.phone, 
+      };
+
+      console.log("Sending booking to server...", payload);
+      
+      const headers = { 
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true"
+      };
+      
+      const response = await fetch(`${API_URL}/api/bookings`, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload), // ✅ newRequest ki jagah payload bheja
+      });
+
+      const result = await response.json();
+      console.log("Server Response:", result);
+
+    } catch (error) {
+      console.error("❌ Booking Send Error:", error);
+    }
+
   }, [user]);
 
   const acceptUserPrice = useCallback((requestId: string, panditName: string) => {
@@ -266,6 +326,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         getResponsesForRequest,
         getMyBookings,
         isLoading,
+        services, // ✅ Services
+        temples,  // ✅ Temples bhi pass kar diye
       }}
     >
       {children}

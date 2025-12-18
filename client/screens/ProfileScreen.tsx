@@ -116,7 +116,7 @@ export default function ProfileScreen() {
       <View style={[styles.profileHeader, { backgroundColor: theme.backgroundDefault }]}>
         <View style={[styles.avatar, { backgroundColor: Colors.light.priceBackground }]}>
           <Image
-            source={require("../../assets/images/icon.png")}
+            source={require("../../assets/images/icon.webp")}
             style={styles.avatarImage}
             resizeMode="contain"
           />
