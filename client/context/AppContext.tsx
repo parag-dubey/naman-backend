@@ -89,7 +89,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [temples, setTemples] = useState<Temple[]>([]); // ✅ Temples State
 
   // ✅ YAHAN APNA NGROK LINK DALO
-  const API_URL = "https://subdistichous-atmospherically-nida.ngrok-free.dev";
+  // const API_URL = "https://subdistichous-atmospherically-nida.ngrok-free.dev";
+  const API_URL = "https://naman-backend.vercel.app";
 
   useEffect(() => {
     loadStoredData();
